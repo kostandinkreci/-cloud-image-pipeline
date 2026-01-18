@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cloud Image Pipeline - Demo</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <link rel="icon" href="data:,">
+  </head>
+
+  <body>
+    <main class="card">
+      <h1>Upload image → Get thumbnail</h1>
+
+      <div class="controls">
+        <input id="fileInput" type="file" accept="image/*" />
+        <button id="uploadBtn" type="button">Upload</button>
+        <button id="downloadBtn" type="button" disabled>Download thumbnail</button>
+      </div>
+
+      <p id="status">Choose an image to start.</p>
+
+      <p class="jobline">
+        Job:
+        <a id="jobLink" href="#" target="_blank" rel="noreferrer">—</a>
+      </p>
+
+      <div class="grid">
+        <div>
+          <h3>Original</h3>
+          <img id="originalPreview" alt="Original preview" />
+        </div>
+
+        <div>
+          <h3>Thumbnail</h3>
+          <img id="thumbPreview" alt="Thumbnail preview" />
+        </div>
+      </div>
+    </main>
+
+    <script src="/static/app.js?v=4"></script>
+  </body>
+</html>

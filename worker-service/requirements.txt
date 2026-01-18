@@ -1,0 +1,6 @@
+SQLAlchemy
+psycopg2-binary
+pika
+minio
+Pillow
+
