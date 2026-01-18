@@ -1,3 +1,5 @@
+![CI](https://github.com/kostandinkreci/-cloud-image-pipeline/actions/workflows/ci.yml/badge.svg)
+
 Cloud-Native Image Processing Pipeline
 Projektübersicht
 
