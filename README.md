@@ -117,6 +117,39 @@ curl http://localhost:8000/api/v1/images/<JOB_ID>
   ]
 }
 ```
+---
+
+## Cloud Deployment (Nachweis der Lauffähigkeit)
+
+Die Anwendung wurde zusätzlich zu der lokalen Docker-Compose-Ausführung
+erfolgreich in der Cloud deployed.
+
+Das Deployment erfolgte auf einer Linux-VM (IaaS) mit Docker und Docker Compose.
+Alle Services (API, Worker, RabbitMQ, PostgreSQL, MinIO) laufen vollständig
+containerisiert in einer produktionsnahen Umgebung.
+
+### Live-Demo (Cloud)
+
+- **API & Swagger UI:**  
+  http://46.224.238.49:8000/docs
+
+- **Web-UI:**  
+  http://46.224.238.49:8000/
+
+### Nachweis durch Screenshots
+
+Die folgenden Screenshots dokumentieren die erfolgreiche Cloud-Ausführung:
+
+- Laufende Docker-Compose-Services auf dem Server  
+- Erreichbare Swagger/OpenAPI-Dokumentation  
+- Funktionierende Web-UI mit Bild-Upload & Thumbnail-Erstellung  
+
+![Docker Compose](docs/images/docker-compose.png)
+![Swagger Cloud](docs/images/swagger-cloud.png)
+![UI Cloud](docs/images/ui-demo.png)
+
+Damit ist der vollständige End-to-End-Datenfluss auch in der Cloud nachgewiesen.
+
 
 ## Ergebnisüberprüfung
 
