@@ -144,9 +144,9 @@ Die folgenden Screenshots dokumentieren die erfolgreiche Cloud-Ausführung:
 - Erreichbare Swagger/OpenAPI-Dokumentation  
 - Funktionierende Web-UI mit Bild-Upload & Thumbnail-Erstellung  
 
-![Docker Compose](docs/images/docker-compose.png)
-![Swagger Cloud](docs/images/swagger-cloud.png)
-![UI Cloud](docs/images/ui-demo.png)
+![Docker Compose](docs/images/cloud-docker-compose.png)
+![Swagger Cloud](docs/images/cloud-swagger-cloud.png)
+![UI Cloud](docs/images/cloud-ui.png)
 
 Damit ist der vollständige End-to-End-Datenfluss auch in der Cloud nachgewiesen.
 
