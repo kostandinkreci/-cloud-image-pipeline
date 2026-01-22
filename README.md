@@ -1,125 +1,113 @@
 ![CI](https://github.com/kostandinkreci/-cloud-image-pipeline/actions/workflows/ci.yml/badge.svg)
 
-Cloud-Native Image Processing Pipeline
-Projektübersicht
+# Cloud-Native Image Processing Pipeline
 
-Dieses Projekt implementiert eine cloud-native, eventgetriebene Bildverarbeitungspipeline als lauffähigen Prototyp (MVP).
-Benutzer:innen können Bilder über eine REST-API hochladen. Die Bilder werden in einem S3-kompatiblen Object Storage gespeichert, asynchron verarbeitet und anschließend als Thumbnail erneut abgelegt. Der Verarbeitungsstatus kann jederzeit über die API abgefragt werden.
+## Projektübersicht
+Dieses Projekt implementiert eine cloud-native, eventgetriebene Bildverarbeitungspipeline
+als lauffähigen Minimum Viable Product (MVP).
 
-Das Projekt demonstriert zentrale Cloud-Native-Konzepte wie lose gekoppelte Services, asynchrone Verarbeitung, Containerisierung, Dev/Prod-Parity und Infrastructure-as-Code.
+Benutzer:innen können Bilder über eine REST-API hochladen. Die Bilder werden in einem
+S3-kompatiblen Object Storage gespeichert, asynchron verarbeitet und anschließend als
+Thumbnail erneut abgelegt. Der Verarbeitungsstatus kann jederzeit über die API abgefragt werden.
 
-Architektur & Komponenten
+Das Projekt demonstriert zentrale Cloud-Native-Konzepte wie lose gekoppelte Services,
+asynchrone Verarbeitung, Containerisierung, Dev/Prod-Parity und Infrastructure as Code.
 
-Die Anwendung besteht aus mehreren unabhängigen Services:
+---
 
-API-Service (FastAPI)
-Stellt REST-Endpunkte zum Upload von Bildern und zur Abfrage des Job-Status bereit.
+## Architektur
 
-Message Queue (RabbitMQ)
-Entkoppelt Upload und Bildverarbeitung durch asynchrone Jobs.
+![Architekturdiagramm](docs/images/cloud-image-pipeline architecture.png)
 
-Worker-Service (Python)
-Verarbeitet die Jobs aus der Queue, erzeugt Thumbnails und aktualisiert den Status.
+### Komponenten
+- **Client** – Sendet Upload-Anfragen an die API
+- **API-Service (FastAPI)** – Upload, Job-Erstellung, Statusabfrage
+- **RabbitMQ** – Asynchrone Message Queue
+- **Worker-Service (Python)** – Bildverarbeitung & Thumbnail-Erstellung
+- **MinIO (S3-kompatibel)** – Speicherung von Originalen & Thumbnails
+- **PostgreSQL** – Persistenz von Job-Status & Metadaten
 
-Object Storage (MinIO)
-Speichert Originalbilder und verarbeitete Thumbnails in getrennten Buckets.
+**Job-Lifecycle:** `PENDING → PROCESSING → DONE`
 
-Datenbank (PostgreSQL)
-Persistiert Jobs, Status und Metadaten.
+---
 
-Client
-  |
-  v
-FastAPI (Upload / Status)
-  |
-  v
-RabbitMQ (Job Queue)
-  |
-  v
-Worker (Thumbnail-Erstellung)
-  |
-  v
-MinIO (Object Storage)
+## Technologiestack
+- Programmiersprache: Python
+- API: FastAPI
+- Worker: Python
+- Message Queue: RabbitMQ
+- Datenbank: PostgreSQL
+- Object Storage: MinIO (S3-kompatibel)
+- Containerisierung: Docker
+- Orchestrierung: Docker Compose
+- CI: GitHub Actions
 
-MVP-Funktionen
-1. Bild-Upload & Job-Erstellung
+---
 
-Upload eines Bildes über eine REST-API
+## Bildverarbeitungs-Workflow
+1. Upload eines Bildes über die REST-API
+2. Speicherung des Originals in MinIO
+3. Veröffentlichung eines Jobs in RabbitMQ
+4. Verarbeitung durch den Worker
+5. Speicherung des Thumbnails
+6. Aktualisierung des Job-Status
 
-Speicherung des Originalbildes im Object Storage
+### Originalbilder
+![MinIO Original](docs/images/minio-images-original.png)
 
-Anlegen eines Verarbeitungsjobs mit Status PENDING
+### Verarbeitete Bilder (Thumbnails)
+![MinIO Processed](docs/images/minio-images-processed.png)
 
-2. Asynchrone Bildverarbeitung
+### Message Queue
+![RabbitMQ Queue](docs/images/rabbitmq-queue.png)
 
-Worker liest Jobs aus RabbitMQ
+---
 
-Generierung eines verkleinerten Thumbnails
+## API-Dokumentation
 
-Speicherung des Thumbnails im Object Storage
+Die REST-API ist mit OpenAPI (Swagger) dokumentiert und wird automatisch von FastAPI generiert.
 
-Aktualisierung des Job-Status (PROCESSING → DONE)
+![Swagger UI](docs/images/swagger.png)
 
-3. Status- & Ergebnisabruf
+Swagger UI ist erreichbar unter:
+`http://localhost:8000/docs`
 
-API-Endpunkt zur Abfrage des aktuellen Status
+---
 
-Rückgabe von Metadaten
+## Lokale Ausführung
 
-Anzeige der Ergebnisse über den MinIO Console Zugriff
+### Voraussetzungen
+- Docker
+- Docker Compose
 
-Tech Stack
-
-Programmiersprache: Python
-
-API: FastAPI
-
-Worker: Python
-
-Message Queue: RabbitMQ
-
-Datenbank: PostgreSQL
-
-Object Storage: MinIO (S3-kompatibel)
-
-Containerisierung: Docker
-
-Lokale Orchestrierung: Docker Compose
-
-Logs & Healthchecks: Standardisierte Console-Logs & /health Endpoint
-
-Lokale Ausführung (Dev/Prod-Parity)
-Voraussetzungen
-
-Docker
-
-Docker Compose
-
-Start der Anwendung
+### Anwendung starten
+```bash
 cd deploy
 docker compose up --build
+```
 
+### Nutzung & Test
 
-Alle Services werden containerisiert gestartet und sind lokal lauffähig.
-
-Nutzung & Test
-Bild hochladen
+**Bild hochladen:**
+```bash
 curl -F "file=@example.jpg" http://localhost:8000/api/v1/images
+```
 
-
-Antwort:
-
+**Antwort:**
+```json
 {
   "id": "<JOB_ID>",
   "status": "PENDING"
 }
+```
 
-Job-Status abfragen
+**Job-Status abfragen:**
+```bash
 curl http://localhost:8000/api/v1/images/<JOB_ID>
+```
 
-
-Antwort (nach Verarbeitung):
-
+**Antwort:**
+```json
 {
   "id": "<JOB_ID>",
   "status": "DONE",
@@ -128,50 +116,46 @@ Antwort (nach Verarbeitung):
     { "type": "thumbnail" }
   ]
 }
+```
 
-Ergebnisüberprüfung
+## Ergebnisüberprüfung
 
-Die Ergebnisse können über die MinIO Console eingesehen werden:
+Die Verarbeitungsergebnisse können über die MinIO Console überprüft werden:
 
-URL: http://localhost:9001
+- **URL:** http://localhost:9001
+- **Benutzername:** minioadmin
+- **Passwort:** minioadmin
 
-Benutzer: minioadmin
+**Buckets:**
+- `images-original` – Originalbilder
+- `images-processed` – Generierte Thumbnails
 
-Passwort: minioadmin
+## Optionale UI-Demonstration
 
-Buckets:
+Eine einfache Web-UI ist verfügbar unter `http://localhost:8080` (siehe `frontend/` Verzeichnis).
 
-images-original → Originalbilder
+![UI Demo](docs/images/ui-demo.png)
 
-images-processed → Generierte Thumbnails
+## Anwendung ausgewählter 12-Factor-Prinzipien
 
-Die visuelle Überprüfung zeigt eindeutig die erfolgreiche Verarbeitung realer Bilder.
+- **Konfiguration über Environment-Variablen** – Alle Services konfigurieren sich über Umgebungsvariablen
+- **Explizite Dependency-Definition** – Dependencies sind in `requirements.txt` definiert
+- **Logs über stdout** – Services loggen direkt nach stdout/stderr
+- **Dev/Prod-Parity durch Containerisierung** – Gleiche Container in Entwicklung und Produktion
+- **Neustartbare Services** – Services sind stateless und können jederzeit neu gestartet werden
 
-Anwendung der 12-Factor-Prinzipien (Auswahl)
+## CI-Pipeline
 
-Konfiguration: vollständig über Environment-Variablen
+Das Projekt enthält eine GitHub-Actions-CI-Pipeline zur automatischen Validierung der Services.
 
-Dependencies: explizit definiert (requirements.txt, Dockerfiles)
+## Fazit
 
-Logs: Ausgabe über stdout
+Dieses Projekt demonstriert eine vollständige cloud-native Bildverarbeitungspipeline
+mit asynchroner Verarbeitung, klarer Architektur und realistischen Infrastrukturkomponenten.
 
-Dev/Prod-Parity: identische Ausführung lokal & containerisiert
+## Autor
 
-Disposability: Services können jederzeit neu gestartet werden
+**Name:** Kostandin Kreci
 
-Nachweis der Cloud-Lauffähigkeit
+**GitHub:** [kostandinkreci](https://github.com/kostandinkreci)
 
-Vollständig containerisierte Services
-
-Asynchrone Verarbeitung über Message Queue
-
-Object Storage als externer Dienst
-
-Funktionierender End-to-End-Datenfluss
-
-Nachweis über Live-Demo und Screenshots (MinIO, RabbitMQ, API)
-
-Fazit
-
-Das Projekt zeigt exemplarisch, wie eine moderne cloud-native Anwendung aufgebaut sein kann.
-Der Fokus liegt bewusst auf einem klar abgegrenzten, lauffähigen MVP, der mehrere Cloud-Native-Technologien sinnvoll kombiniert und deren Zusammenspiel demonstriert.
