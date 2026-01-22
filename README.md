@@ -132,7 +132,7 @@ Die Verarbeitungsergebnisse können über die MinIO Console überprüft werden:
 
 ## Optionale UI-Demonstration
 
-Eine einfache Web-UI ist verfügbar unter `http://localhost:8080` (siehe `frontend/` Verzeichnis).
+Eine einfache Web-UI wird direkt vom FastAPI-Service ausgeliefert. Die UI läuft auf demselben Port wie die API und ist unter `http://localhost:8000` erreichbar.
 
 ![UI Demo](docs/images/ui-demo.png)
 
